@@ -1,3 +1,7 @@
+This is all derivitave work based on https://github.com/IanHarvey/spark-monitor & http://www.instructables.com/id/Internet-connected-home-energy-monitor/.
+
+I only copied the info to this repository for my own reference. I do not claim any of this work as my own.
+
 # Notes
 
 I've been building the code using command-line source from GitHub:
