@@ -1,5 +1,6 @@
 #include <math.h>
 #include "application.h"
+#include "MQTT.h"
 
 #ifndef ADC1_DR_ADDRESS
 #define ADC1_DR_ADDRESS   ((uint32_t)0x4001244C)
@@ -208,6 +209,28 @@ void isr_sync_pin()
 
 }
 
+// MQTT Setup =============
+const char* outTopic = "/stanford/hab/power-monitor";
+
+static byte server[] = { 10,0,1,9 };
+
+static void callback(char* topic, unsigned char* payload, unsigned int length) {
+}
+
+MQTT client(server, 1883, callback);
+
+bool mqttConnect() {
+    if (client.isConnected())   
+        return true;
+    
+    client.connect("power-monitor-sense");
+    if (client.isConnected()) {
+        client.publish(outTopic,"hello world");
+        return true;
+    } else 
+        return false;
+}
+
 // Main setup() and loop() ============================================
 
 static int startTime;
@@ -243,15 +266,15 @@ void setup()
 
     DBG.println("Starting...");
 
-    Spark.variable("powerWatts", &powerWatts, DOUBLE);
-    Spark.variable("powerVA",    &powerVA, DOUBLE);
-    Spark.variable("mainsFreq",  &mainsFreq, DOUBLE);
-    Spark.variable("totalWh",    &totalWh, DOUBLE);
-    Spark.variable("sinPhi",     &sinPhi, DOUBLE);
+//    Spark.variable("powerWatts", &powerWatts, DOUBLE);
+//    Spark.variable("powerVA",    &powerVA, DOUBLE);
+//    Spark.variable("mainsFreq",  &mainsFreq, DOUBLE);
+//    Spark.variable("totalWh",    &totalWh, DOUBLE);
+//    Spark.variable("sinPhi",     &sinPhi, DOUBLE);
 
-    Spark.variable("upTime",     &upTime, INT);
-    Spark.variable("connectTime", &connectTime, INT);
-    Spark.variable("wifiRSSI",   &wifiRSSI, INT);
+//    Spark.variable("upTime",     &upTime, INT);
+//    Spark.variable("connectTime", &connectTime, INT);
+//    Spark.variable("wifiRSSI",   &wifiRSSI, INT);
 }
 
 static void oneSecondUpdate();
@@ -309,6 +332,13 @@ void loop()
     }
 }
 
+static String getCSV()
+{
+  return String(upTime) + "," + String(powerWatts) + "," + 
+      String(powerVA) + "," + String(sinPhi) + "," + String(mainsFreq) + 
+      "," + String(vmin*(3.30/4096.0)) + "," + String(vmax*(3.30/4096.0));
+}
+
 static void oneSecondUpdate()
 {
   upTime++;
@@ -325,4 +355,9 @@ static void oneSecondUpdate()
   DBG.print(mainsFreq); DBG.println("Hz");
   DBG.print("Vmin="); DBG.print(vmin*(3.30/4096.0));
   DBG.print(" Vmax="); DBG.println(vmax*(3.30/4096.0));
+
+  if (mqttConnect()) {
+    client.publish(outTopic, getCSV().c_str());
+  }
+
 }

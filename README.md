@@ -18,6 +18,12 @@ Yes, it could be expanded - there are 8 analogue inputs on the Core, each of whi
 ### What I have done:
 I duplicated R4/R5/C4 as well as R6/R7/C5. The additional sensor circuitry is connected to A1.
 
+## Firmware
+
+* http://stm32.kosyak.info/doc/index.html
+* Removed spark variables
+* 
+
 # Component details:
 
 * D1-D4: Mouser - 512-1N4001 - $0.16
