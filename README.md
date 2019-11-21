@@ -192,6 +192,8 @@ Its now time to transfer your code to the Spark Core! You can always do this usi
 2. Open up a terminal window on your computer and type this command to find out if the Core indeed being detected correctly.
 
    `dfu-util -l`
+
+Test Change
       you should get the following in return:
          ```
             Found DFU: [1d50:607f] devnum=0, cfg=1, intf=0, alt=0, name="@Internal Flash  /0x08000000/20*001Ka,108*001Kg"
